@@ -9,6 +9,8 @@
 #else
     #include <GL/glut.h>
 #endif
+
+
   
 // Rotation
 static GLfloat yRot = 0.0f;
@@ -96,7 +98,7 @@ void RenderScene(void){
     glPushMatrix();
 
 	// Move object back and do in place rotation  
-	glTranslatef(0.0f, -1.0f, -5.0f);  
+	glTranslatef(0.0f, -0.7f, -6.0f);  
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);  
 
 	// Draw something  
@@ -119,7 +121,7 @@ void RenderScene(void){
     glPopMatrix();
 
     glPushMatrix();
-        glTranslatef(0.0f, -0.24f, 0.0f);
+        glTranslatef(0.0f, -0.14f, 0.0f);
         glutSolidSphere(0.45f,26,13);
     glPopMatrix();
 
@@ -192,6 +194,18 @@ void RenderScene(void){
         
 
     glPopMatrix();
+
+    //buttons
+    glColor3f(0.6f,0.0f,0.0f);
+    glPushMatrix();
+        glTranslatef(0.0f,0.0f,0.4f);
+        glutSolidSphere(0.05f,13,26);
+        glTranslatef(0.0f,0.4f,-0.1f);
+        glutSolidSphere(0.06f,13,26);
+        glTranslatef(0.0f,0.2f,0.0f);
+        glutSolidSphere(0.06f,13,26);
+    glPopMatrix();
+
 
 
           

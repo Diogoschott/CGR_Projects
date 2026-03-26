@@ -98,13 +98,13 @@ void RenderScene(void){
     glPushMatrix();
 
 	// Move object back and do in place rotation  
-	glTranslatef(0.0f, -0.7f, -10.0f);  
+	glTranslatef(0.0f, -0.7f, -20.0f);  
 	glRotatef(yRot, 0.0f, 1.0f, 0.0f);  
 
 	// Draw something  
 
-	// white
-	glColor3f(0.50f, 0.50f, 0.50f);  
+	// GRAY
+	glColor3f(0.70f, 0.70f, 0.70f);  
 
 	// Main Body  
 
@@ -112,23 +112,24 @@ glPushMatrix();
    GLUquadricObj *pObj = gluNewQuadric();
    gluQuadricDrawStyle(pObj, GLU_FILL);
 
-   // 1. Desenha o corpo lateral
+   // LATA DA FACE
    glTranslatef(0.0f,2.0f,0.0f);
    glRotatef(90.0f, 1.0f, 0.0f, 0.0f); 
-   gluCylinder(pObj, 0.50f, 0.50f, 1.0f, 26, 23);
+   gluCylinder(pObj, 0.60f, 0.60f, 1.0f, 26, 23);
 
-   // 2. Desenha a base inferior (em z = 0)
-   // O disco da base precisa estar "olhando" para baixo, por isso rotacionamos 180 graus
+   // TOPO DA CABECA
    glPushMatrix();
-      glutSolidSphere(0.5,26,13);
+      glutSolidSphere(0.6,26,13);
    glPopMatrix();
 
-   // 3. Desenha o topo (em z = 1.0)
+   // PESCOÇO
    glPushMatrix();
       glTranslatef(0.0f, 0.0f, 1.0f);
       gluCylinder(pObj, 0.50f, 1.0f, 0.2f, 26, 23);
    glPopMatrix();
 
+
+   //CORPO
    glPushMatrix();
       glRotatef(180.0f, 1.0f, 0.0f, 0.0f); 
       glTranslatef(0.0,0.0,-4.2);

@@ -87,6 +87,9 @@ void SpecialKeys(int key, int x, int y){
   
 // Called to draw scene  
 void RenderScene(void){  
+
+    int i;
+
     // Clear the window with current clearing color  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
   
@@ -112,22 +115,113 @@ void RenderScene(void){
 
         // CORPO
         glPushMatrix(); 
-            glRotatef(-90.0f, 1.0f, 0.0f, 0.0f); 
+            glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
             gluCylinder(pObj, 0.8f, 1.0f, 3.0f, 26, 23);
+
+            //OMBRO 1
+            glPushMatrix();
+                glTranslatef(1.0f, 0.0f, 2.6f); 
+                gluSphere(pObj, 0.25, 32, 10);
+
+                //BRAÇO 1
+                glPushMatrix();
+                    glRotatef(90.0f, 0.0f, 1.0f, 0.0f); 
+                    gluCylinder(pObj, 0.2, 0.2, 1.7, 32, 10);
+                    
+                    //MARCAS DO BRAÇO
+                    glColor3f(.5, .5, .5);
+                    for(i = 0; i < 5; i++){
+                        glPushMatrix();
+                            glTranslatef(0.0, 0.0, 0.2 + 0.30 * i);
+                            gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                        glPopMatrix();
+                    }
+                    glColor3f(0.70f, 0.70f, 0.70f); 
+
+                    //COTOVELO 1
+                    glPushMatrix();
+                        glTranslatef(0.0f, 0.0f, 1.7f);
+                        gluSphere(pObj, 0.2, 31, 10);
+
+                        //ANTEBRAÇO 1
+                        glPushMatrix();
+                            gluCylinder(pObj, 0.2, 0.2, 1.5, 32, 10);
+
+                            //MARCAS NO ANTEBRAÇO
+                            glColor3f(.5, .5, .5);
+                            for(i = 0; i < 4; i++){
+                                glPushMatrix();
+                                    glTranslatef(0.0, 0.0, 0.1 + 0.3 * i);
+                                    gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                                glPopMatrix();
+                            }
+                            glColor3f(0.70f, 0.70f, 0.70f); 
+
+                        glPopMatrix();
+                    glPopMatrix();
+
+                glPopMatrix();
+            glPopMatrix();
+
+            //OMBRO 2
+            glPushMatrix();
+                glTranslatef(-1.0f, 0.0f, 2.6f); 
+                gluSphere(pObj, 0.25, 32, 10);
+
+                //BRAÇO 2
+                glPushMatrix();
+                    glRotatef(-90.0f, 0.0f, 1.0f, 0.0f); 
+                    gluCylinder(pObj, 0.2, 0.2, 1.7, 32, 10);
+                    
+                    //MARCAS DO BRAÇO
+                    glColor3f(.5, .5, .5);
+                    for(i = 0; i < 5; i++){
+                        glPushMatrix();
+                            glTranslatef(0.0, 0.0, 0.2 + 0.30 * i);
+                            gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                        glPopMatrix();
+                    }
+                    glColor3f(0.70f, 0.70f, 0.70f); 
+
+                    //COTOVELO 2
+                    glPushMatrix();
+                        glTranslatef(0.0f, 0.0f, 1.7f);
+                        gluSphere(pObj, 0.2, 31, 10);
+
+                        //ANTEBRAÇO 2
+                        glPushMatrix();
+                            gluCylinder(pObj, 0.2, 0.2, 1.5, 32, 10);
+
+                            //MARCAS NO ANTEBRAÇO
+                            glColor3f(.5, .5, .5);
+                            for(i = 0; i < 4; i++){
+                                glPushMatrix();
+                                    glTranslatef(0.0, 0.0, 0.1 + 0.3 * i);
+                                    gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                                glPopMatrix();
+                            }
+                            glColor3f(0.70f, 0.70f, 0.70f); 
+
+                        glPopMatrix();
+                    glPopMatrix();
+
+                glPopMatrix();
+            glPopMatrix();
+
         glPopMatrix();
 
-        glPushMatrix();
-            glTranslatef(0.0f, 3.2f, 0.0f);
+        glTranslatef(0.0f, 3.2f, 0.0f);
 
+        glPushMatrix();
             // PESCOÇO
             glPushMatrix();
                 glRotatef(90.0f, 1.0f, 0.0f, 0.0f); 
                 gluCylinder(pObj, 0.50f, 1.0f, 0.2f, 26, 23);
             glPopMatrix();
 
-            glPushMatrix();
-                glTranslatef(0.0f, 1.0f, 0.0f);
+            glTranslatef(0.0f, 1.0f, 0.0f);
 
+            glPushMatrix();
                 // LATA DA FACE
                 glPushMatrix();
                     glRotatef(90.0f, 1.0f, 0.0f, 0.0f); 
@@ -135,11 +229,52 @@ void RenderScene(void){
 
                     //PARTE DOS OLHOS
                     glPushMatrix();
-                        glTranslatef(0.3,0.0,0.0);
-                        glRotatef(90.0,0.0,1.0,0.0);
-                        glScalef(1.0f,1.8f,1.0f);
-                        gluCylinder(pObj,0.3,0.3,0.4,32,10);
+                        glTranslatef(0.0f, 0.3f, 0.0f);
+                        
+                        glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+                        
+                        glScalef(1.8f, 1.0f, 1.0f);
+                        gluCylinder(pObj, 0.3, 0.3, 0.5, 32, 10);
+
+                        //ESCURO ATRAS DOS OLHOS
+                        glPushMatrix();
+                            glColor3f(0.0f, 0.0f, 0.0f); // Preto
+                            glTranslatef(0.0f, 0.0f, 0.3f);
+                            gluDisk(pObj, 0.0, 0.30, 32, 10);
+                        glPopMatrix();
+                    
+                        glScalef(0.5555f, 1.0f, 1.0f);
+
+                        //OLHO 1 (Direito)
+                        glPushMatrix();
+                            //IRIS AMARELAS
+                            glColor3f(1.0f, 0.999f, 0.64f);
+                            // Separa os olhos lado a lado no eixo X
+                            glTranslatef(0.23f, 0.0f, 0.3f);
+                            gluSphere(pObj, 0.23, 32, 10);
+
+                            //PUPILA
+                            glColor3f(0.0f, 0.0f, 0.0f);
+                            glTranslatef(0.0f, 0.0f, 0.18f);
+                            gluSphere(pObj, 0.1, 10, 10);
+                        glPopMatrix();
+                        
+                        //OLHO 2 (Esquerdo)
+                        glPushMatrix();
+                            //IRIS AMARELAS
+                            glColor3f(1.0f, 0.999f, 0.64f);
+                            glTranslatef(-0.23f, 0.0f, 0.3f);
+                            gluSphere(pObj, 0.23, 32, 10);
+
+                            //PUPILA
+                            glColor3f(0.0f, 0.0f, 0.0f);
+                            glTranslatef(0.0f, 0.0f, 0.18f);
+                            gluSphere(pObj, 0.1, 10, 10);
+                        glPopMatrix();
                     glPopMatrix();
+
+                    //Gray again
+                    glColor3f(0.70f, 0.70f, 0.70f);  
 
                 glPopMatrix();
 
@@ -162,11 +297,8 @@ void RenderScene(void){
                                 glutSolidSphere(0.13,32,10);
                             glPopMatrix();
                     glPopMatrix();
-
-                glPopMatrix(); 
-
+                glPopMatrix();
             glPopMatrix(); 
-
         glPopMatrix(); 
 
         gluDeleteQuadric(pObj); // Sempre delete para evitar vazamento de memória

@@ -156,12 +156,20 @@ void RenderScene(void){
                                 glPopMatrix();
                             }
 
-                            //Mao 2 
+                            //Mao 1 
+                            glPushMatrix();
+                                glRotatef(180,1.0,0.0,0.0);
+                                glTranslatef(0.0,0.0,-1.5);
+                                gluCylinder(pObj,0.41,0.21,0.25,26,14);
+
+                                //Palma 1
                                 glPushMatrix();
-                                    glRotatef(180,0.0,0.0,0.0);
-                                    glTranslatef(0.0,0.0,-1.5);
-                                    gluCylinder(pObj,0.41,0.21,0.25,26,14);
+                                    glRotatef(180,1.0,.0,.0);
+                                    gluDisk(pObj,.0,.41,32,10);
                                 glPopMatrix();
+
+                            glPopMatrix();
+
                             glColor3f(0.70f, 0.70f, 0.70f); 
 
                         glPopMatrix();
@@ -207,24 +215,20 @@ void RenderScene(void){
                                     gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
                                 glPopMatrix();
                             }
-                            glColor3f(0.70f, 0.70f, 0.70f); 
 
-                                //Mao 2 
+                            //Mao 2 
+                            glPushMatrix();
+                                glRotatef(180,1.0,0.0,0.0);
+                                glTranslatef(0.0,0.0,-1.5);
+                                gluCylinder(pObj,0.41,0.21,0.25,26,14);
+
                                 glPushMatrix();
-                                    glRotatef(180,0.0,0.0,0.0);
-                                    glTranslatef(0.0,0.0,-1.5);
-                                    gluCylinder(pObj,0.41,0.21,0.25,26,14);
-
-                                    //palma da mao 2
-                                    glPushMatrix();
-                                        glTranslatef(0.0,0.0,0.2);
-                                        glRotatef(90,1.0,0.0,0.0);
-                                        gluDisk(pObj,0.42,0.0,26,14);
-                                    glPopMatrix();
+                                    glRotatef(180.,1.0,.0,.0);
+                                    gluDisk(pObj,.0,.42,32,10);
                                 glPopMatrix();
+                            glPopMatrix();
 
-
-
+                            glColor3f(0.70f, 0.70f, 0.70f); 
 
                         glPopMatrix();
                     glPopMatrix();
@@ -256,18 +260,25 @@ void RenderScene(void){
                         //PANTURRILHA 1
                         glPushMatrix();
                             glRotatef(0.0f, 0.0f, 1.0f, 0.0f); 
-                        gluCylinder(pObj, 0.2, 0.2, 1.7, 32, 10);
+                            gluCylinder(pObj, 0.2, 0.2, 1.7, 32, 10);
                     
-                        //MARCAS DA PANTURRILHA
-                        glColor3f(.5, .5, .5);
-                        for(i = 0; i < 5; i++){
+                            //MARCAS DA PANTURRILHA
+                            glColor3f(.5, .5, .5);
+                            for(i = 0; i < 5; i++){
+                                glPushMatrix();
+                                    glTranslatef(0.0, 0.0, 0.2 + 0.30 * i);
+                                    gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                                glPopMatrix();
+                            }   
+
+                            
                             glPushMatrix();
-                                glTranslatef(0.0, 0.0, 0.2 + 0.30 * i);
-                                gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
+                                glTranslatef(.0,.0,1.7);
+                                gluCylinder(pObj,.21,.5,.3,32,10);
                             glPopMatrix();
-                        }
-                        glColor3f(0.70f, 0.70f, 0.70f); 
-                    glPopMatrix();
+
+                            glColor3f(0.70f, 0.70f, 0.70f); 
+                        glPopMatrix();
 
                     glPopMatrix();
             glPopMatrix();
@@ -307,19 +318,24 @@ void RenderScene(void){
                                     gluCylinder(pObj, 0.21, 0.21, 0.1, 32, 10);
                                 glPopMatrix();
                             }
-                            glColor3f(0.70f, 0.70f, 0.70f); 
+
+                        glPushMatrix();
+                            glTranslatef(.0,.0,1.7);
+                            gluCylinder(pObj,.21,.5,.3,32,10);
                         glPopMatrix();
 
                     glPopMatrix();
 
-                    
-
+                glPopMatrix();
 
             glPopMatrix();
 
         glPopMatrix();
 
         glTranslatef(0.0f, 3.2f, 0.0f);
+        
+        //Cinza Claro
+        glColor3f(0.70f, 0.70f, 0.70f); 
 
         glPushMatrix();
             // PESCOÇO

@@ -10,6 +10,10 @@
   
 // Rotation
 static GLfloat yRot = 0.0f;
+static GLfloat ombroEsqRot = .0;
+static GLfloat ombroDirRot= .0;
+static GLfloat cotoveloEsqRot = .0;
+static GLfloat cotoveloDirRot = .0;
 
 // Change viewing volume and viewport.  Called when window is resized  
 void ChangeSize(int w, int h)  
@@ -79,12 +83,30 @@ void SpecialKeys(int key, int x, int y){
     if(key == GLUT_KEY_RIGHT)  
         yRot += 5.0f;  
                   
-    yRot = (GLfloat)((const int)yRot % 360);  
+    yRot = (GLfloat)((const int)yRot % 360);    
   
     // Refresh the Window  
     glutPostRedisplay();  
 }
   
+void KeyboardFunc(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'a':
+        case 'A': ombroEsqRot += 5.0f;
+        break;
+        case 'S':
+        case 's': ombroDirRot += 5.0f; 
+        break;
+        case 'j':
+        case 'J': cotoveloEsqRot += 5.0f;
+        break;
+        case 'k':
+        case 'K': cotoveloDirRot += 5.0f;
+        break;
+    }
+    glutPostRedisplay();
+}
+
 // Called to draw scene  
 void RenderScene(void){  
 
@@ -121,6 +143,7 @@ void RenderScene(void){
             //OMBRO 1
             glPushMatrix();
                 glTranslatef(1.0f, 0.0f, 2.6f); 
+                glRotatef(ombroDirRot,1.,.0,.0);
                 gluSphere(pObj, 0.25, 32, 10);
 
                 //BRAÇO 1
@@ -141,6 +164,7 @@ void RenderScene(void){
                     //COTOVELO 1
                     glPushMatrix();
                         glTranslatef(0.0f, 0.0f, 1.7f);
+                        glRotatef(cotoveloDirRot,.0,1.0,.0);
                         gluSphere(pObj, 0.2, 31, 10);
 
                         //ANTEBRAÇO 1
@@ -181,6 +205,7 @@ void RenderScene(void){
             //OMBRO 2
             glPushMatrix();
                 glTranslatef(-1.0f, 0.0f, 2.6f); 
+                glRotatef(ombroEsqRot,1.0,.0,.0);
                 gluSphere(pObj, 0.25, 32, 10);
 
                 //BRAÇO 2
@@ -201,6 +226,7 @@ void RenderScene(void){
                     //COTOVELO 2
                     glPushMatrix();
                         glTranslatef(0.0f, 0.0f, 1.7f);
+                        glRotatef(cotoveloEsqRot,.0,1.,.0);
                         gluSphere(pObj, 0.2, 31, 10);
 
                         //ANTEBRAÇO 2
@@ -445,10 +471,11 @@ int main(int argc, char *argv[]){
     glutInitWindowSize(800, 600);  
     glutCreateWindow("Modeling with Quadrics");  
     glutReshapeFunc(ChangeSize);  
-    glutSpecialFunc(SpecialKeys);  
+    glutSpecialFunc(SpecialKeys);
+    glutKeyboardFunc(KeyboardFunc);  
     glutDisplayFunc(RenderScene);  
     SetupRC();  
-    glutMainLoop();  
+    glutMainLoop();
       
     return 0; 
 }

@@ -1,8 +1,6 @@
 //comando para rodar no terminal Mac:
 //g++ main.cpp -o app -framework GLUT -framework OpenGL -Wno-deprecated && ./app
 
-
-
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
     #include <GLUT/glut.h>
@@ -10,110 +8,150 @@
     #include <GL/glut.h>
 #endif
 
+#include <stdlib.h>
+#include <time.h>
 
-  
-// Rotation
+#define MAX_PARTICLES 1000
+
+// 1. Estrutura atualizada com estado de "descanso"
+struct Particle {
+    float x, y, z;
+    float velocity;
+    float stopY;       // Altura exata em que esta partícula vai parar (gera relevo irregular)
+    int restingFrames; // Contador de quanto tempo ela fica no chão
+    bool isResting;    // Define se ela está caindo ou parada no chão
+};
+
+Particle snow[MAX_PARTICLES];
+
 static GLfloat yRot = 0.0f;
 
-// Change viewing volume and viewport.  Called when window is resized  
-void ChangeSize(int w, int h)  
-    {  
+// 2. Nova inicialização
+void InitSnow() {
+    for (int i = 0; i < MAX_PARTICLES; i++) {
+        snow[i].x = ((float)rand() / RAND_MAX) * 12.0f - 6.0f;
+        snow[i].y = ((float)rand() / RAND_MAX) * 10.0f + 2.0f;
+        snow[i].z = ((float)rand() / RAND_MAX) * 15.0f - 12.0f;
+        snow[i].velocity = ((float)rand() / RAND_MAX) * 0.015f + 0.005f; 
+        
+        // Define a altura que vai parar (Y=-1.2 do chão + variação de 0 até 0.3 para simular o acúmulo)
+        snow[i].stopY = -1.2f + ((float)rand() / RAND_MAX) * 0.3f; 
+        snow[i].isResting = false;
+        snow[i].restingFrames = 0;
+    }
+}
+
+// 3. Nova lógica de física e acúmulo
+void UpdateSnow() {
+    for (int i = 0; i < MAX_PARTICLES; i++) {
+        if (!snow[i].isResting) {
+            snow[i].y -= snow[i].velocity; // A neve cai
+            
+            // Verifica se bateu na altura do chão calculada para ela
+            if (snow[i].y <= snow[i].stopY) {
+                snow[i].isResting = true;
+                snow[i].y = snow[i].stopY; // Trava a posição no chão
+                
+                // Define um tempo aleatório para ficar parada (entre 100 e 350 frames)
+                snow[i].restingFrames = 100 + rand() % 250; 
+            }
+        } else {
+            // Se já está no chão, diminui o tempo de vida dela ali
+            snow[i].restingFrames--;
+            
+            // Quando o tempo acaba, ela "derrete" e ressurge lá no topo
+            if (snow[i].restingFrames <= 0) {
+                snow[i].isResting = false;
+                snow[i].y = 5.0f + ((float)rand() / RAND_MAX) * 5.0f; // Volta pro alto
+                snow[i].x = ((float)rand() / RAND_MAX) * 12.0f - 6.0f;
+                snow[i].z = ((float)rand() / RAND_MAX) * 15.0f - 12.0f;
+                snow[i].stopY = -1.2f + ((float)rand() / RAND_MAX) * 0.3f; // Sorteia novo ponto de parada
+            }
+        }
+    }
+    glutPostRedisplay();
+}
+
+void ChangeSize(int w, int h) {  
     GLfloat fAspect;  
-  
-    // Prevent a divide by zero  
-    if(h == 0)  
-        h = 1;  
-  
-    // Set Viewport to window dimensions  
+    if(h == 0) h = 1;  
     glViewport(0, 0, w, h);  
-  
     fAspect = (GLfloat)w/(GLfloat)h;  
-  
-    // Reset coordinate system  
     glMatrixMode(GL_PROJECTION);  
     glLoadIdentity();  
-  
-    // Produce the perspective projection  
     gluPerspective(35.0f, fAspect, 1.0, 40.0);  
-  
     glMatrixMode(GL_MODELVIEW);  
     glLoadIdentity();  
-    }  
+}  
   
-  
-// This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.  
 void SetupRC(){  
-
-    // Light values and coordinates  
     GLfloat  whiteLight[] = { 0.05f, 0.05f, 0.05f, 1.0f };  
     GLfloat  sourceLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };  
     GLfloat  lightPos[] = { -10.f, 5.0f, 5.0f, 1.0f };  
   
-    glEnable(GL_DEPTH_TEST);    // Hidden surface removal  
-    glFrontFace(GL_CCW);        // Counter clock-wise polygons face out  
-    glEnable(GL_CULL_FACE);     // Do not calculate inside  
+    glEnable(GL_DEPTH_TEST);    
+    glFrontFace(GL_CCW);        
+    glEnable(GL_CULL_FACE);     
   
-    // Enable lighting  
     glEnable(GL_LIGHTING);  
-  
-    // Setup and enable light 0  
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT,whiteLight);  
     glLightfv(GL_LIGHT0,GL_AMBIENT,sourceLight);  
     glLightfv(GL_LIGHT0,GL_DIFFUSE,sourceLight);  
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);  
     glEnable(GL_LIGHT0);  
   
-    // Enable color tracking  
     glEnable(GL_COLOR_MATERIAL);  
-      
-    // Set Material properties to follow glColor values  
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);  
-  
-    // Black blue background  
     glClearColor(0.25f, 0.25f, 0.50f, 1.0f);  
-
 }  
   
-// Respond to arrow keys (rotate snowman)
 void SpecialKeys(int key, int x, int y){  
-
     if(key == GLUT_KEY_LEFT)  
         yRot -= 5.0f;  
-  
     if(key == GLUT_KEY_RIGHT)  
         yRot += 5.0f;  
                   
     yRot = (GLfloat)((const int)yRot % 360);  
-  
-    // Refresh the Window  
     glutPostRedisplay();  
 }
   
-// Called to draw scene  
 void RenderScene(void){  
-    // Clear the window with current clearing color  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
   
-    // Save the matrix state and do the rotations  
+    // --- DESENHA A NEVE PRIMEIRO ---
+    glPushMatrix(); 
+    glDisable(GL_LIGHTING); 
+    glColor3f(1.0f, 1.0f, 1.0f); 
+    glPointSize(2.5f); 
+    
+    glBegin(GL_POINTS);
+    for (int i = 0; i < MAX_PARTICLES; i++) {
+        glVertex3f(snow[i].x, snow[i].y, snow[i].z);
+    }
+    glEnd();
+    
+    glEnable(GL_LIGHTING); 
+    glPopMatrix(); 
+
+    // --- DESENHA O BONECO E O CHÃO ---
     glPushMatrix();
 
-	// Move object back and do in place rotation  
-	glTranslatef(0.0f, -0.7f, -6.0f);  
-	glRotatef(yRot, 0.0f, 1.0f, 0.0f);  
+    glTranslatef(0.0f, -0.5f, -6.0f);  
+    glRotatef(yRot, 0.0f, 1.0f, 0.0f);  
 
-	// Draw something  
+    glColor3f(1.0f, 1.0f, 1.0f);  
 
-	// white
-	glColor3f(1.0f, 1.0f, 1.0f);  
+    // Floor 
+    glPushMatrix();
+        glTranslatef(0.0f, -10.7, 0.0f);
+        glutSolidCube(20);
+    glPopMatrix();
 
-	// Main Body  
-
-
-	// Head
-	glPushMatrix(); // save transform matrix state
-		glTranslatef(0.0f, 1.0f, 0.0f);
-		glutSolidSphere(0.24f, 26, 13);
-	glPopMatrix(); // restore transform matrix state
+    // Head
+    glPushMatrix(); 
+        glTranslatef(0.0f, 1.0f, 0.0f);
+        glutSolidSphere(0.24f, 26, 13);
+    glPopMatrix(); 
 
     glPushMatrix();
         glTranslatef(0.0f, 0.5f, 0.0f);
@@ -121,39 +159,36 @@ void RenderScene(void){
     glPopMatrix();
 
     glPushMatrix();
-        glTranslatef(0.0f, -0.14f, 0.0f);
+        glTranslatef(0.0f, -0.24f, 0.0f);
         glutSolidSphere(0.45f,26,13);
     glPopMatrix();
 
-	// Nose (orange)
-	glColor3f(1.0f, 0.4f, 0.51f);  
-	glPushMatrix();
-		glTranslatef(0.0f, 1.0f, 0.2f);
-		glutSolidCone(0.04f, 0.3f, 26, 13);
-	glPopMatrix();  
+    // Nose
+    glColor3f(1.0f, 0.4f, 0.51f);  
+    glPushMatrix();
+        glTranslatef(0.0f, 1.0f, 0.2f);
+        glutSolidCone(0.04f, 0.3f, 26, 13);
+    glPopMatrix();  
 
-	// Eyes (black)
+    // Eyes
     glColor3f(0.0f,0.0f,0.0f);
     glPushMatrix();
         glTranslatef(0.075f,1.1f,0.2f);
-        //glScalef(1.0f,1.0f,0.01f);
         glutSolidSphere(0.05f,26,13);
     glPopMatrix();
 
     glColor3f(0.0f,0.0f,0.0f);
     glPushMatrix();
         glTranslatef(-0.075f,1.1f,0.2f);
-        //glScalef(1.0f,1.0f,0.01f);
         glutSolidSphere(0.05f,26,13);
     glPopMatrix();
-// glColor, glPushMatrix,...
 
-	// Hat
+    // Hat
     glPushMatrix();
         glTranslatef(0.0f,1.2f,0.0f);
         glRotatef(-90.0f,1.0f,0.0f,0.0f);
-        GLUquadricObj *pObj = gluNewQuadric(); // Cria o objeto quadric
-        gluQuadricDrawStyle(pObj, GLU_FILL);   // Define como sólido
+        GLUquadricObj *pObj = gluNewQuadric(); 
+        gluQuadricDrawStyle(pObj, GLU_FILL);   
         gluCylinder(pObj, 0.20f,0.20f,0.4f,26,23);
     glPopMatrix();
 
@@ -161,11 +196,11 @@ void RenderScene(void){
     glPushMatrix();
         glTranslatef(0.0f,1.25f,0.0f);
         glRotatef(-90.0f,1.0f,0.0f,0.0f);
-        gluQuadricDrawStyle(pObj, GLU_FILL);   // Define como sólido
+        gluQuadricDrawStyle(pObj, GLU_FILL);   
         gluCylinder(pObj, 0.21f,0.21f,0.1f,26,23);
     glPopMatrix();
 
-	// Hat brim
+    // Hat brim
     glColor3f(0.0f,0.0f,0.0f);
     glPushMatrix();
         glTranslatef(0.0f,1.2,0.0f);
@@ -173,60 +208,42 @@ void RenderScene(void){
         glutSolidSphere(0.3f,26,13);
     glPopMatrix();
 
-
-    //Arms
-
+    // Arms
     glPushMatrix();
         glColor3f(0.4f,0.2f,0.2f);
         glTranslatef(0.3,0.5f,0.0f);
         glRotatef (-90.0f,0.0f,-5.0f,0.0f);
         gluQuadricDrawStyle(pObj, GLU_FILL);
         gluCylinder(pObj,0.03f,0.03f,0.4f,26,23);
-
     glPopMatrix();
 
-        glPushMatrix();
+    glPushMatrix();
         glColor3f(0.4f,0.2f,0.2f);
         glTranslatef(-0.3,0.5f,0.0f);
-        glRotatef (-95.0f,0.0f,0.30f,0.0f);
+        glRotatef (-95.0f,0.0f,0.50f,0.0f);
         gluQuadricDrawStyle(pObj, GLU_FILL);
         gluCylinder(pObj,0.03f,0.03f,0.4f,26,23);
-        
-
     glPopMatrix();
-
-    //buttons
-    glColor3f(0.6f,0.0f,0.0f);
-    glPushMatrix();
-        glTranslatef(0.0f,0.0f,0.4f);
-        glutSolidSphere(0.05f,13,26);
-        glTranslatef(0.0f,0.4f,-0.1f);
-        glutSolidSphere(0.06f,13,26);
-        glTranslatef(0.0f,0.2f,0.0f);
-        glutSolidSphere(0.06f,13,26);
-    glPopMatrix();
-
-
-
           
-    // Restore the matrix state  
     glPopMatrix();  
-  
-    // Buffer swap  
     glutSwapBuffers();  
-
 }    
 
 int main(int argc, char *argv[]){
-
+    srand((unsigned int)time(NULL));
+    
     glutInit(&argc, argv);  
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);  
     glutInitWindowSize(800, 600);  
     glutCreateWindow("Modeling with Quadrics");  
     glutReshapeFunc(ChangeSize);  
     glutSpecialFunc(SpecialKeys);  
+    
+    glutIdleFunc(UpdateSnow);
     glutDisplayFunc(RenderScene);  
     SetupRC();  
+    InitSnow();
+    
     glutMainLoop();  
       
     return 0; 
